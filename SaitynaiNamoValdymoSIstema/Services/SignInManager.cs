@@ -43,7 +43,7 @@ namespace SaitynaiNamoValdymoSIstema.Services
             CreatePasswordHash(password, out byte[] passwordHash);
 
             //var user = _ctx.People.FromSqlRaw($"SELECT * FROM Person WHERE Name = \'{userName}\' AND Password = \'{password}\';" ).ToList().FirstOrDefault();
-            List<Person> users = _ctx.People.FromSqlRaw($"SELECT * FROM Person;").ToList();
+            List<Person> users = _ctx.People.FromSqlRaw($"SELECT * FROM Person WHERE Name = \'{userName}\';").ToList();
             var user = users.FirstOrDefault(x=>VerifyPasswordHash(password, x.Password));
 
             if (user != null)

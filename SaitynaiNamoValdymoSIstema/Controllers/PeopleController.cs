@@ -132,7 +132,7 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         }
         // POST: api/People
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost, Authorize(Roles = "User,Admin")]
+        [HttpPost]
         public async Task<IActionResult> PostPerson(PersonDTO person, int flatId, int floorId)
         {
             Flat? f = await _context.Flats.FirstOrDefaultAsync(p => p.Id == flatId);
@@ -143,6 +143,7 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
             Person personN = new();
             personN = _mapper.Map<Person>(person);
             //hashing
+            personN.Role = "User";
             CreatePasswordHash(person.Password, out byte[] passwordHash);
             personN.Password = passwordHash;
 
