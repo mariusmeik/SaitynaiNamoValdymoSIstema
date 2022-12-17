@@ -28,6 +28,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
        // GET: api/Messagees
        [HttpGet, Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Messagee>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMessagees()
         {
             return Ok(await _context.Messagees.ToListAsync());
@@ -35,6 +40,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
        // GET: api/Messagees/5
         [HttpGet("{id}"), Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Messagee))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetMessagee(int id)
         {
             var messagee = await _context.Messagees.FindAsync(id);
@@ -50,6 +60,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
        // PUT: api/Messagees/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}"), Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutMessagee(int id, MessagePutDTO message)
         {
             Messagee messagee = new Messagee();
@@ -103,6 +118,10 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         //POST: api/Messagees
        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost, Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> PostMessagee(MessageDTO messagee)
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -132,6 +151,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         //DELETE: api/Messagees/5
         [HttpDelete("{id}"), Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteMessagee(int id)
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;

@@ -16,42 +16,44 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         //builder.Services.Transcient<SaitynaiNamoValdymoSistemaDBContext>();
-        //builder.Services.AddDbContext<SaitynaiNamoValdymoSistemaDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SaitynaiNamoValdymoSIstemaContext")));
-        builder.Services.AddDbContext<SaitynaiNamoValdymoSistemaDBContext>(options => options.UseSqlServer("Server = tcp:saitynaidb.database.windows.net,1433; Initial Catalog = SaitynaiNamoValdymoSistemaDB; Persist Security Info = False; User ID = marjas10; Password = MariusMeik12345; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;"));
-        
+        builder.Services.AddDbContext<SaitynaiNamoValdymoSistemaDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SaitynaiNamoValdymoSIstemaContext")));
+        //builder.Services.AddDbContext<SaitynaiNamoValdymoSistemaDBContext>(options => options.UseSqlServer("Server = tcp:saitynaidb.database.windows.net,1433; Initial Catalog = SaitynaiNamoValdymoSistemaDB; Persist Security Info = False; User ID = marjas10; Password = MariusMeik12345; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;"));
         builder.Services.AddScoped<JWTAuthService>();
         builder.Services.AddScoped<SignInManager>();
-
-
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddSwaggerGen(options =>
+        builder.Services.AddSwaggerGen(c =>
         {
-            options.AddSecurityDefinition("jwt", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
                 In = ParameterLocation.Header,
+                Description = "Please insert JWT with Bearer into field",
                 Name = "Authorization",
                 Type = SecuritySchemeType.ApiKey
             });
-
-            options.OperationFilter<SecurityRequirementsOperationFilter>();
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },Array.Empty<string>()}
+    });
+        });
+        var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                      });
         });
 
-
-    //    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    //.AddJwtBearer(options =>
-    //{
-    //    options.TokenValidationParameters = new TokenValidationParameters
-    //    {
-    //        ValidateIssuerSigningKey = true,
-    //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-    //            .GetBytes("123")),
-    //        ValidateIssuer = false,
-    //        ValidateAudience = false
-    //    };
-    //});
 
 
 
@@ -99,7 +101,7 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        //builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
 
@@ -113,7 +115,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
-
+        app.UseCors(MyAllowSpecificOrigins);
         //app.UseEndpoints(endpoints =>
         //{
         //    endpoints.MapControllers();

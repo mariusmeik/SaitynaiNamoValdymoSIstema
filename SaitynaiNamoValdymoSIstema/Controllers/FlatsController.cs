@@ -26,6 +26,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
 
         [HttpGet, Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Flat>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetFlats(int floorId)
         {
             var floors = _context.Flats.Where(p => p.FloorId == floorId);
@@ -38,6 +43,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // GET: api/Flats/5
         [HttpGet("{id}"), Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Flat))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFlat(int id, int floorId)
         {
             var flat = await _context.Flats.FindAsync(id);
@@ -46,12 +56,17 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
             {
                 return NotFound("flat with tis id not found, or searched on the wrong floor");
             }
-            return Ok(_mapper.Map<FlatDTO>(flat));
+            return Ok(flat);
         }
 
         // PUT: api/Flats/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}"), Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutFlat(int id, Flat flat, int floorId)
         {
             if (id != flat.Id || flat.FloorId != floorId)
@@ -94,6 +109,10 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         // POST: api/Flats
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost, Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> PostFlat(FlatDTO flat, int floorId)
         {
             if (flat.FloorId != floorId)
@@ -122,6 +141,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // DELETE: api/Flats/5
         [HttpDelete("{id}"), Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteFlat(int id, int floorId)
         {
             var flat = await _context.Flats.FindAsync(id);

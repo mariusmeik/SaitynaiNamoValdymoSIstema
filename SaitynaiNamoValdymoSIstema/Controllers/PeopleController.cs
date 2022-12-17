@@ -15,7 +15,7 @@ using XSystem.Security.Cryptography;
 
 namespace SaitynaiNamoValdymoSIstema.Controllers
 {
-    [Route("api/Floors/{floorId}/Flats/{flatId}/[controller]")]
+    [Route("api/Flats/{flatId}/[controller]")]
     [ApiController]
     public class PeopleController : ControllerBase
     {
@@ -27,12 +27,13 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
             _context = context;
             _mapper = mapper;
         }
-        private async Task<Person> GetPersonHelper(int id, int flatId, int floorId)
+        
+        private async Task<Person> GetPersonHelper(int id, int flatId)
         {
             Person? person = await _context.People.FirstOrDefaultAsync(p => p.Id == id);
             Flat? flat = await _context.Flats.FirstOrDefaultAsync(p => p.Id == person.FlatId);
             Floor? floor = await _context.Floors.FirstOrDefaultAsync(p => p.Id == flat.FloorId);
-            if (flat.Id != flatId || floor.Id != floorId)
+            if (flat.Id != flatId)
             {
                 throw new ArgumentException("person doesnot live in a given floor or flat");
             }
@@ -41,6 +42,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         }
         // GET: api/People
         [HttpGet, Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Person))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetPeople(int flatId, int floorId)
         {
             var listOfFlats = await _context.Flats.Where(p => p.FloorId == floorId && p.Id == flatId).ToListAsync();
@@ -51,12 +57,17 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // GET: api/People/5
         [HttpGet("{id}"), Authorize(Roles = "User,Admin")]
-        public async Task<IActionResult> GetPerson(int id, int flatId, int floorId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Person))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPerson(int id, int flatId)
         {
             Person person = new();
             try
             {
-                person = await GetPersonHelper(id, flatId, floorId);
+                person = await GetPersonHelper(id, flatId);
             }
             catch (Exception ex)
             {
@@ -72,12 +83,17 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         // PUT: api/People/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PutPerson(int id, int flatId, int floorId, PersonDTO person)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PutPerson(int id, int flatId, PersonDTO person)
         {
             Person personNew = new();
             try
             {
-                personNew = await GetPersonHelper(id, flatId, floorId);
+                personNew = await GetPersonHelper(id, flatId);
             }
             catch (Exception ex)
             {
@@ -133,10 +149,14 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         // POST: api/People
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IActionResult> PostPerson(PersonDTO person, int flatId, int floorId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> PostPerson(PersonDTO person, int flatId)
         {
             Flat? f = await _context.Flats.FirstOrDefaultAsync(p => p.Id == flatId);
-            if (f == null || f.FloorId != floorId || person.FlatId != flatId || person.FlatId != f.Id)
+            if (f == null || person.FlatId != flatId || person.FlatId != f.Id)
             {
                 return BadRequest();
             }
@@ -155,12 +175,17 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // DELETE: api/People/5
         [HttpDelete("{id}"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeletePerson(int id, int flatId, int floorId)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeletePerson(int id, int flatId)
         {
             Person personNew = new();
             try
             {
-                personNew = await GetPersonHelper(id, flatId, floorId);
+                personNew = await GetPersonHelper(id, flatId);
             }
             catch (Exception ex)
             {

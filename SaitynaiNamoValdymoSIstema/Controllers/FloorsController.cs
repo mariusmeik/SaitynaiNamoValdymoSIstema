@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SaitynaiNamoValdymoSIstema.DataDB;
 using SaitynaiNamoValdymoSIstema.DTOs;
+using SaitynaiNamoValdymoSIstema.DTOs.RequestExamples;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace SaitynaiNamoValdymoSIstema.Controllers
 {
@@ -27,6 +29,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // GET: api/Floors
         [HttpGet, Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Floor>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetFloors()
         {
             List<Floor> floors = await _context.Floors.ToListAsync();
@@ -35,6 +42,12 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // GET: api/Floors/5
         [HttpGet("{id}"), Authorize(Roles = "User,Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Floor))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
         public async Task<IActionResult> GetFloor(int id)
         {
             var floor = await _context.Floors.FindAsync(id);
@@ -45,9 +58,29 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
             return Ok(floor);
         }
 
-        // PUT: api/Floors/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="floor"></param>
+        /// /// <remarks>
+        /// Sample request:
+        ///
+        ///     Put /Todo
+        ///     { 
+        ///        "Id" = 1,
+        ///        "WhichFloor" = 1
+        ///     }
+        ///
+        /// </remarks>
+        /// <returns></returns>
         [HttpPut("{id}"), Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [SwaggerRequestExample(typeof(Floor), typeof(FloorPutRequestExample))]
         public async Task<IActionResult> PutFloor(int id, Floor floor)
         {
             if (id != floor.Id)
@@ -79,6 +112,10 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         // POST: api/Floors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost, Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> PostFloor(FloorDTO floor)
         {
             Floor newFloor = _mapper.Map<Floor>(floor);
@@ -90,6 +127,11 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         // DELETE: api/Floors/5
         [HttpDelete("{id}"), Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteFloor(int id)
         {
             var floor = await _context.Floors.FindAsync(id);

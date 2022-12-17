@@ -9,6 +9,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using SignInResult = SaitynaiNamoValdymoSIstema.Services.SignInResult;
+
 namespace SaitynaiNamoValdymoSIstema.Controllers
 {
     [Route("api/[controller]")]
@@ -29,6 +31,9 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SignInResult))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
 
@@ -44,13 +49,17 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
             {
                 UserName = result.User.Name,
                 AccessToken = result.AccessToken,
-                RefreshToken = result.RefreshToken
+                RefreshToken = result.RefreshToken,
+                Role=result.User.Role
             });
         }
 
 
 
         [HttpPost("refreshtoken")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SignInResult))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
@@ -83,6 +92,7 @@ namespace SaitynaiNamoValdymoSIstema.Controllers
         public string UserName { get; set; }
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
+        public string Role { get; set; }
     }
 
     public class RefreshTokenRequest
